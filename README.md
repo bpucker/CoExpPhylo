@@ -72,9 +72,9 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 
 `--raxml` species the RAxML path. This option can be used if RAxML is not in the PATH variable or if a specific version should be used. The default is 'raxml'.
 
+`--fasttree` species the full path to FastTree. This option can be used if FastTree is not in the PATH variable or if a specific version should be used. The default is 'fasttree'.
 
-  --fasttree STR     Full path to FastTree [fasttree]
-  --cpur     INT     Number of cores for tree construction [cpu]
+`--cpur` species the number of cores that are used for the tree construction. Default is the value of `--cpu` or 4 if no other value is set.
 
 
 ## Script for the annotation of sequence clusters
