@@ -7,6 +7,27 @@ Collection of scripts associated with co-expression and phylogenetic analysis ap
 Based on defined genes in different species, this script searches for co-expressed genes in that species. The predefined genes of different species should be orthologs. To find out if the co-expressed genes are also orthologs, a phylogenetic tree is constructed. This allows to harness the available transcriptome data sets across species borders. If gene expression networks are conserved across species, the sequences identified through co-expression should cluster in phylogenetic trees that are constructed in the final step.
 
 
+```
+Usage:
+  python3 coexp_phylo.py --in <FILE> --out <DIR> --ref <FILE>
+
+Mandatory:
+  --config   STR    Config file.
+  --out      STR    Directory for temporary and output files.
+ 
+		
+Optional:
+  --anno     STR     Annotation file matching reference
+  --araport  STR     Araport11 peptide file
+  --r        FLOAT   Correlation coefficient cutoff
+  --p        FLOAT   P-value cutoff
+  --numcut   INT     Number of co-expressed genes
+  --cpu      INT     Number of cores to use
+  --scorecut FLOAT   Minimal BLAST score cutoff
+  --mode     STR     Tree construction algorithm (fasttree|raxml)[fasttree]
+```
+
+
 
 ## Script for the annotation of sequence clusters
 
