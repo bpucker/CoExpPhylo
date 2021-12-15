@@ -3,7 +3,7 @@
 
 ### some functions taken from MYB_annotator.py and KIPEs ###
 
-__version__ = "v0.03"
+__version__ = "v0.031"
 
 __usage__ = """
 					python3 coexp_phylo.py
@@ -100,8 +100,11 @@ def load_baits( baitfile, spec_id_prefix ):
 		if line == "ID	Gene	Similarity	ConservedResidues	ConservedRegions\n":	#remove first line if header produced by KIPEs
 			line = f.readline()
 		while line:
-			parts = line.strip().split('\t')
-			IDs.append( spec_id_prefix + "@" + parts[0] )
+			if "\t" in line:
+				parts = line.strip().split('\t')
+				IDs.append( spec_id_prefix + "@" + parts[0] )
+			else:
+				IDs.append( line.strip() )
 			line = f.readline()
 	return IDs
 
