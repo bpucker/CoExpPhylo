@@ -46,9 +46,35 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 
 
 
+`--out` specifies the output folder. All temporary file and the final output files will be placed in this folder. The folder will be created if it does not exist already.
+
+`--anno` species an annotation file. IDs need to be located in the first column and the annotation in the second column.
+
+`--araport` specifies the Araport11 peptide sequence file as reference for the analysis. This allows an effective annotation in the final steps.
+
+`--r` specifies the minimal correlation coefficient for genes to be considered. The default value is 0.7.
+
+`--p` specifies the maximal p-value in the correlation calculation for genes to be considered. The default value is 0.05.
+
+`--numcut` specifies the maximal number of genes to consider in the co-expression analysis. Only these top sequences are analyzed in the next steps. The default value is 100. An increase of this number will substantially increase the run time.
+
+`--cpu` specifies the number of cores for BLAST and other operations. The default value is 4.
+
+`--scorecut` specifies the minimal BLAST score cutoff for hits to be considered. The default value is 100. The value is relevant for the construction of sequence clusters once co-expressed genes have been identified.
+
+`--simcut` specifies the minimal similarity of a BLAST hit to be considered. The default value is 60.
+
+`--lencut` specifies the minimal lenght of a BLAST hit to be considered. The default value is 100.
+
+`--mode` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clustered are identified. Currently, FastTree and RAxML are the supported options.
+
+`--mafft` specifies the MAFFT path. This option can be used if MAFFT is not in the PATH variable or if a specific version should be used. The default is 'mafft'.
+
+`--raxml` species the RAxML path. This option can be used if RAxML is not in the PATH variable or if a specific version should be used. The default is 'raxml'.
 
 
-
+  --fasttree STR     Full path to FastTree [fasttree]
+  --cpur     INT     Number of cores for tree construction [cpu]
 
 
 ## Script for the annotation of sequence clusters
