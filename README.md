@@ -34,6 +34,22 @@ Optional:
 ```
 
 
+`--config` specifies a config file that contains all the information about the input files. The columns in this file need to be comma-separated. Each row describes one data set. The columns are: ID, TPM file, CDS file,file with IDs of bait sequences.
+
+ID = This is usually the species name, but should not contain any spaces or other weired characters. Using a-Z and 0-9 is fine with underscores are space replacements. This ID is used as an prefix for all sequences of this species to avoid ambiguities when combining the sequences of different species in one file.
+
+TPM file = First column contains the gene IDs and the first row contains the sample names. All other fields in this table are gene expression values. The IDs in this file need to match the sequences in the CDS file and also the IDs given as baits.
+
+CDS file = This is a multiple FASTA file with the coding sequences of this species. The sequence IDs need to match the TPM file and also the IDs specified as baits in the last input file type.
+
+Bait sequence ID file = This file contains the ID of genes that should be used as baits. For example, these could be known genes involved in the upstream part of a pathway if the objective is to discover genes further downstream in the pathway. One ID should be given per line.
+
+
+
+
+
+
+
 
 ## Script for the annotation of sequence clusters
 
