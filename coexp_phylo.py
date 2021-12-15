@@ -3,7 +3,7 @@
 
 ### some functions taken from MYB_annotator.py and KIPEs ###
 
-__version__ = "v0.01"
+__version__ = "v0.03"
 
 __usage__ = """
 					python3 coexp_phylo.py
@@ -18,9 +18,15 @@ __usage__ = """
 					--numcut <NUMBER_OF_COEXPRESSED_GENES_CONSIDERED>
 					--cpu <NUMBER_OF_CPUs_TO_USE>
 					--scorecut <MIN_BLAST_SCORE_CUTOFF>
+					--simcut <MIN_BLAST_SIMILARITY_CUTOFF>
+					--lencut <MIN_BLAST_LENGTH_CUTOFF>
 					--mode <TREE_ALGORITHM>(fasttree|raxml)[fasttree]
-					
+					--mafft <MAFFT_PATH>
+					--raxml <RAXML_PATH>
+					--fasttree <FASTTREE_PATH>
+					--cpur <CPUs_FOR_TREE_CONSTRUCTION>
 					"""
+
 
 import os, re, sys, subprocess, math, glob
 from operator import itemgetter
@@ -176,7 +182,7 @@ def compare_candidates_against_all( candidate, gene_expression, rcutoff, pvaluec
 	return coexp_gene_IDs
 
 
-def load_blast_hits( blast_result_file, scorecut ):
+def load_blast_hits( blast_result_file, scorecut, simcut, lencut):
 	""""! @brief load BLAST hits above a certain score per bait """
 	
 	hits = []
@@ -185,12 +191,14 @@ def load_blast_hits( blast_result_file, scorecut ):
 		while line:
 			parts = line.strip().split('\t')
 			if float( parts[-1] ) > scorecut:
-				hits.append( parts[1] )
+				if float( parts[2] ) > simcut:
+					if int( parts[3] ) > lencut:
+						hits.append( parts[1] )
 			line = f.readline()
 	return list( set( hits ) )
 
 
-def load_hits_per_bait( blast_result_file, scorecut ):
+def load_hits_per_bait( blast_result_file, scorecut, simcut, lencut ):
 	"""! @brief load BLAST hits per bait """
 	
 	hits = {}
@@ -199,10 +207,12 @@ def load_hits_per_bait( blast_result_file, scorecut ):
 		while line:
 			parts = line.strip().split('\t')
 			if float( parts[-1] ) > scorecut:
-				try:
-					hits[ parts[0] ].append( parts[1] )
-				except KeyError:
-					hits.update( { parts[0]: [ parts[1] ] } )
+				if float( parts[2] ) > simcut:
+					if int( parts[3] ) > lencut:
+						try:
+							hits[ parts[0] ].append( parts[1] )
+						except KeyError:
+							hits.update( { parts[0]: [ parts[1] ] } )
 			line = f.readline()
 	return hits
 
@@ -460,9 +470,17 @@ def main( arguments ):
 	else:
 		cpu = 4
 	if '--scorecut' in arguments:
-		scorecut = float( arguments[ arguments.index('--cpu')+1 ] )
+		scorecut = float( arguments[ arguments.index('--scorecut')+1 ] )
 	else:
 		scorecut = 100.0
+	if '--simcut' in arguments:
+		simcut = float( arguments[ arguments.index('--simcut')+1 ] )
+	else:
+		simcut = 60.0
+	if '--lencut' in arguments:
+		lencut = float( arguments[ arguments.index('--lencut')+1 ] )
+	else:
+		lencut = 100
 	
 	mindetection = 1	#number of bait genes that a given sequence need to be co-expressed with to be considered (strict would be equal to number of baits)
 	minseqcutoff = 10	#minimal number of sequences to compose a group as tree construction input
@@ -557,7 +575,7 @@ def main( arguments ):
 						p.communicate()
 						p = subprocess.Popen( args= "blastp -query " + baits_file+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
 						p.communicate()
-					hits = load_blast_hits( blast_result_file, scorecut )	# lists of sequence IDs
+					hits = load_blast_hits( blast_result_file, scorecut, simcut, lencut )	# lists of sequence IDs
 					
 					for hit in hits:	#add all sequences from other species to huge collection
 						try:
@@ -585,7 +603,7 @@ def main( arguments ):
 		p.communicate()
 		p = subprocess.Popen( args= "blastp -query " + huge_seq_collection_file_pep+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
 		p.communicate()
-	blast_results = load_hits_per_bait( blast_result_file, scorecut )
+	blast_results = load_hits_per_bait( blast_result_file, scorecut, simcut, lencut )
 	
 	tree_folder = output_folder + "trees/"
 	if not os.path.exists( tree_folder ):
@@ -612,7 +630,7 @@ def main( arguments ):
 
 
 
-if '--config' in sys.argv:
+if '--config' in sys.argv and '--out' in sys.argv:
 	main( sys.argv )
 else:
 	sys.exit( __usage__ )
