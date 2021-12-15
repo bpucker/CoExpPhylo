@@ -1,7 +1,14 @@
 # CoExpPhylo
-Collection of scripts associated with co-expression and phylogenetic analysis approach
+Collection of scripts associated with co-expression and phylogenetic analysis approach.
 
 
+## Find groups of similar sequences that show co-expression with orthologs
+
+Based on defined genes in different species, this script searches for co-expressed genes in that species. The predefined genes of different species should be orthologs. To find out if the co-expressed genes are also orthologs, a phylogenetic tree is constructed. This allows to harness the available transcriptome data sets across species borders. If gene expression networks are conserved across species, the sequences identified through co-expression should cluster in phylogenetic trees that are constructed in the final step.
+
+
+
+## Script for the annotation of sequence clusters
 
 ```
 Usage:
