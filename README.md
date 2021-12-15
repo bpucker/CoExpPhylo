@@ -9,7 +9,7 @@ Based on defined genes in different species, this script searches for co-express
 
 ```
 Usage:
-  python3 coexp_phylo.py --in <FILE> --out <DIR> --ref <FILE>
+  python3 coexp_phylo.py --config <FILE> --out <DIR>
 
 Mandatory:
   --config   STR    Config file.
