@@ -19,12 +19,18 @@ Mandatory:
 Optional:
   --anno     STR     Annotation file matching reference
   --araport  STR     Araport11 peptide file
-  --r        FLOAT   Correlation coefficient cutoff
-  --p        FLOAT   P-value cutoff
-  --numcut   INT     Number of co-expressed genes
-  --cpu      INT     Number of cores to use
-  --scorecut FLOAT   Minimal BLAST score cutoff
-  --mode     STR     Tree construction algorithm (fasttree|raxml)[fasttree]
+  --r        FLOAT   Correlation coefficient cutoff [0.7]
+  --p        FLOAT   P-value cutoff [0.05]
+  --numcut   INT     Number of co-expressed genes [100]
+  --cpu      INT     Number of cores to use [4]
+  --scorecut FLOAT   Minimal BLAST hit score cutoff [100.0]
+  --simcut   FLOAT   Minimal BLAST hit similarity cutoff [60.0]
+  --lencut   INT     Minimal BLAST hit length cutoff [100]
+  --mode     STR     Tree construction algorithm (fasttree|raxml) [fasttree]
+  --mafft    STR     Full path to MAFFT [mafft]
+  --raxml    STR     Full path to RAxML [raxml]
+  --fasttree STR     Full path to FastTree [fasttree]
+  --cpur     INT     Number of cores for tree construction [cpu]
 ```
 
 
