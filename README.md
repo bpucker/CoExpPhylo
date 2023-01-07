@@ -47,7 +47,7 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 
 `--out` specifies the output folder. All temporary file and the final output files will be placed in this folder. The folder will be created if it does not exist already.
 
-`--anno` species an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
+`--anno` specifies an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
 
 `--araport` specifies the Araport11 peptide sequence file as reference for the analysis. This allows an effective annotation in the final steps.
 
