@@ -103,3 +103,6 @@ Optional:
 `--anno` specifies the annotation file. This file contains a tab-delimited table with the reference sequence ID in the first column and the annotation in the following column(s). All following columns will be merged with a ";" as separator.
 
 
+## Reference
+
+This repository.
