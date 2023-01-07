@@ -1,10 +1,10 @@
 # CoExpPhylo
-Collection of scripts associated with co-expression and phylogenetic analysis approach.
+Collection of scripts associated with an integrated co-expression and phylogenetic analysis approach.
 
 
 ## Combination of co-expression and orthology
 
-Based on defined genes in different species, this script searches for co-expressed genes in that species. The predefined genes of different species should be orthologs. To find out if the co-expressed genes are also orthologs, a phylogenetic tree is constructed. This allows to harness the available transcriptome data sets across species borders. If gene expression networks are conserved across species, the sequences identified through co-expression should cluster in phylogenetic trees that are constructed in the final step.
+Based on defined genes in different species, this script searches for co-expressed genes in each species. The predefined genes of different species should be orthologs. To find out if the co-expressed genes are also orthologs, a phylogenetic tree is constructed. This allows to harness the available transcriptome data sets across species borders. If gene expression networks are conserved across species, the sequences identified through co-expression should cluster in phylogenetic trees that are constructed in the final step.
 
 
 ```
@@ -34,9 +34,9 @@ Optional:
 ```
 
 
-`--config` specifies a config file that contains all the information about the input files. The columns in this file need to be comma-separated. Each row describes one data set. The columns are: ID, TPM file, CDS file,file with IDs of bait sequences.
+`--config` specifies a config file that contains all the information about the input files. The columns in this file need to be comma-separated. Each row describes one data set. The columns are: ID, TPM file, CDS file, and name of file with IDs of bait sequences.
 
-ID = This is usually the species name, but should not contain any spaces or other weired characters. Using a-Z and 0-9 is fine with underscores are space replacements. This ID is used as an prefix for all sequences of this species to avoid ambiguities when combining the sequences of different species in one file.
+ID = This is usually the species name, but should not contain any spaces or other weired characters. Using a-Z and 0-9 is fine with underscores as space replacements. This ID is used as a prefix for all sequences of this species to avoid ambiguities when combining the sequences of different species in one file.
 
 TPM file = First column contains the gene IDs and the first row contains the sample names. All other fields in this table are gene expression values. The IDs in this file need to match the sequences in the CDS file and also the IDs given as baits.
 
@@ -45,10 +45,9 @@ CDS file = This is a multiple FASTA file with the coding sequences of this speci
 Bait sequence ID file = This file contains the ID of genes that should be used as baits. For example, these could be known genes involved in the upstream part of a pathway if the objective is to discover genes further downstream in the pathway. One ID should be given per line.
 
 
-
 `--out` specifies the output folder. All temporary file and the final output files will be placed in this folder. The folder will be created if it does not exist already.
 
-`--anno` species an annotation file. IDs need to be located in the first column and the annotation in the second column.
+`--anno` species an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
 
 `--araport` specifies the Araport11 peptide sequence file as reference for the analysis. This allows an effective annotation in the final steps.
 
@@ -66,7 +65,7 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 
 `--lencut` specifies the minimal lenght of a BLAST hit to be considered. The default value is 100.
 
-`--mode` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clustered are identified. Currently, FastTree and RAxML are the supported options.
+`--mode` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clusters are identified. Currently, FastTree and RAxML are the supported options.
 
 `--mafft` specifies the MAFFT path. This option can be used if MAFFT is not in the PATH variable or if a specific version should be used. The default is 'mafft'.
 
