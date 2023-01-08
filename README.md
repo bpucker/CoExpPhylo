@@ -78,7 +78,9 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 
 `--lencut` specifies the minimal lenght of a BLAST hit to be considered. The default value is 100.
 
-`--mode` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clusters are identified. Currently, FastTree and RAxML are the supported options.
+`--alnmethod` specifies the algorithm/tool used for construction of the multiple sequence alignment as basis of the phylogenetic tree construction. Currently, MAFFT and MUSCLE are the supported options. Default is MAFFT.
+
+`--treemethod` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clusters are identified. Currently, FastTree, RAxML, and IQ-TREE are the supported options. Default is FastTree.
 
 `--mafft` specifies the MAFFT path. This option can be used if MAFFT is not in the PATH variable or if a specific version should be used. The default is 'mafft'.
 
