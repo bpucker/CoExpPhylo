@@ -105,6 +105,18 @@ Default: 'all'.
 `--cpur` species the number of cores that are used for the tree construction. Default is the value of `--cpu` or 4 if no other value is set.
 
 
+`--mindetect` #number of bait genes that a given sequence need to be co-expressed with to be considered (strict would be equal to number of baits). Default: 1.
+
+`--minseqcutoff` #minimal number of sequences to compose a group as tree construction input. Default: 10.
+
+`--mincoexpseqcutoff` #minimal number of co-expressed sequences to compose a group as tree construction input. Default: 10.
+
+`--minintersec` #minimal intersection between two sequence clusters that needs to be exceeded to trigger merging. Default: 0.
+
+`--coexp_script_path` specifies the path to the co-expression helper script required for external execution of the computationally intense part of the co-expression analysis. This is only required if the mode is 'cmd'. Default: coexp_helper.py (script expected in the working directory).
+
+
+
 ## Script for the annotation of sequence clusters
 
 ```
