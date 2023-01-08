@@ -3,7 +3,7 @@
 
 ### some functions taken from MYB_annotator.py and KIPEs ###
 
-__version__ = "v0.12"
+__version__ = "v0.13"
 
 __usage__ = """
 					python3 coexp_phylo.py
@@ -17,12 +17,15 @@ __usage__ = """
 					--r <R_CUTOFF_FOR_CORRELATION_ANALYSIS>
 					--p <PVALUE_CUTOFF_FOR_CORRELATION_ANALYSIS>
 					--numcut <NUMBER_OF_COEXPRESSED_GENES_CONSIDERED>
+					--min_exp_cutoff <MIN_EXP_FOR_GENE_TO_CONSIDER>[30]
 					--cpu <NUMBER_OF_CPUs_TO_USE>
 					--scorecut <MIN_BLAST_SCORE_CUTOFF>
 					--simcut <MIN_BLAST_SIMILARITY_CUTOFF>
 					--lencut <MIN_BLAST_LENGTH_CUTOFF>
+					
 					--alnmethod <ALIGNMENT_ALGORITH>(mafft|muscle)[mafft]
 					--treemethod <TREE_ALGORITHM>(fasttree|raxml|iqtree)[fasttree]
+					
 					--mafft <MAFFT_PATH>[mafft]
 					--muscle <MUSCLE_PATH>[muscle]
 					--raxml <RAXML_PATH>[raxml]
@@ -30,13 +33,19 @@ __usage__ = """
 					--iqtree <IQ-TREE_PATH>[iqtree]
 					--cpur <CPUs_FOR_TREE_CONSTRUCTION>[cpu]
 					
+					--mindetect <MIN_NUMBER_OF_COEXPED_BAITS>[1]
+					--minseqcutoff <MIN_SEQ_CLUSTER_SIZE>[10]
+					--mincoexpseqcutoff <MIN_COEXPED_GENES_FOR_CLUSTER>[10]
+					--minintersec <INTERSEC_BETWEEN_CLUSTERS_FOR_MERGE>[0]
+					
 					--coexp_script_path <PATH_TO_HELPER_SCRIPT>[coexp_helper.py]
 					"""
 
-import os, re, sys, subprocess, math, glob, time
+import os, re, sys, subprocess, math, glob
 from operator import itemgetter
 import numpy as np
 from scipy import stats
+from datetime import datetime
 
 # --- end of imports --- #
 
@@ -480,10 +489,23 @@ def main( arguments ):
 	else:
 		lencut = 100
 	
-	mindetection = 1	#number of bait genes that a given sequence need to be co-expressed with to be considered (strict would be equal to number of baits)
-	minseqcutoff = 10	#minimal number of sequences to compose a group as tree construction input
-	mincoexpseqcutoff = 3	#minimal number of co-expressed sequences to compose a group as tree construction input
-	min_exp_cutoff = 30	#minimal cumulative expression per gene to be considered in the co-expresssion analysis
+	if '--mindetect' in arguments:
+		mindetection = int( arguments[ arguments.index('--mindetect')+1 ] )
+	else:
+		mindetection = 1	#number of bait genes that a given sequence need to be co-expressed with to be considered (strict would be equal to number of baits)
+	
+	if '--minseqcutoff' in arguments:
+		minseqcutoff = int( arguments[ arguments.index('--minseqcutoff')+1 ] )
+	else:
+		minseqcutoff = 10	#minimal number of sequences to compose a group as tree construction input
+	if '--mincoexpseqcutoff' in arguments:
+		mincoexpseqcutoff = int( arguments[ arguments.index('--minseqcutoff')+1 ] )
+	else:
+		mincoexpseqcutoff = 3	#minimal number of co-expressed sequences to compose a group as tree construction input
+	if '--min_exp_cutoff' in arguments:
+		min_exp_cutoff = int( arguments[ arguments.index('--min_exp_cutoff')+1 ] )
+	else:
+		min_exp_cutoff = 30	#minimal cumulative expression per gene to be considered in the co-expresssion analysis
 	
 	if '--alnmethod' in arguments:	#alignment method
 		alnmethod = arguments[ arguments.index('--alnmethod')+1 ]
@@ -528,7 +550,10 @@ def main( arguments ):
 	else:
 		araport_seq_file = ""
 	
-	min_intersection_cutoff = 0	#minimal intersection between two sequence clusters that needs to be exceeded to trigger merging
+	if '--minintersec' in arguments:
+		min_intersection_cutoff = int( arguments[ arguments.index('--minintersec')+1 ] )
+	else:
+		min_intersection_cutoff = 0	#minimal intersection between two sequence clusters that needs to be exceeded to trigger merging
 	
 	if '--coexp_script_path' in arguments:
 		coexp_script_path = arguments[ arguments.index('--coexp_script_path')+1 ]
@@ -546,7 +571,10 @@ def main( arguments ):
 	if not os.path.exists( tmp_folder ):
 		os.makedirs( tmp_folder )
 	
+	sys.stdout.write( str( datetime.now() ) + "loading data ... \n" )
 	config_data = load_config_file_content( config_file, output_folder )	#a species tag is included while loading the sequences to make them unique
+	sys.stdout.write( str( datetime.now() ) + "... loading data completed.\n" )
+	sys.stdout.flush()
 	
 	if len( anno_file ) > 1:
 		anno_mapping_table = load_annotation( anno_file )
@@ -563,6 +591,9 @@ def main( arguments ):
 			blast_cmd_file = output_folder + "BLAST_COMMANDS.txt"
 		# --- run co-expression per species --- #
 		for spec in list( config_data.keys() ):
+			sys.stdout.write( str( datetime.now() ) + " - analyzing " + spec + "\n" )
+			sys.stdout.flush()
+			
 			info = config_data[ spec ]
 			coexp_result_file = tmp_folder + info['id'] + "_coexp_results.txt"
 			
@@ -670,6 +701,8 @@ def main( arguments ):
 		huge_seq_collection = load_sequences( huge_seq_collection_file )
 	
 	### --- FINAL PART --- ###
+	sys.stdout.write( str( datetime.now() ) + " - per species analyses completed.\n" )
+	sys.stdout.flush()
 	if os.path.isfile( huge_seq_collection_file ):
 		# --- run BLAST all vs. all for huge sequence collection --- #
 		huge_pep_collection = translate( huge_seq_collection )
@@ -679,10 +712,14 @@ def main( arguments ):
 		blastdb = tmp_folder + "huge_blastdb"
 		blast_result_file = tmp_folder + "huge_blast_result_file.txt"
 		if not os.path.isfile( blast_result_file ):
+			sys.stdout.write( str( datetime.now() ) + " - starting BLAST for sequence clustering...\n" )
+			sys.stdout.flush()
 			p = subprocess.Popen( args= "makeblastdb -in " + huge_seq_collection_file_pep + " -out " + blastdb + " -dbtype prot", shell=True )
 			p.communicate()
 			p = subprocess.Popen( args= "blastp -query " + huge_seq_collection_file_pep+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
 			p.communicate()
+			sys.stdout.write( str( datetime.now() ) + " ... BLAST for sequence clustering completed.\n" )
+			sys.stdout.flush()
 		blast_results = load_hits_per_bait( blast_result_file, scorecut, simcut, lencut )
 		
 		tree_folder = output_folder + "trees/"
@@ -695,14 +732,21 @@ def main( arguments ):
 		# --- identify groups within the huge sequence collection --- #
 		annotation_file = output_folder + "functional_annotation_of_clusters.txt"
 		if not os.path.isfile( annotation_file ):
+			sys.stdout.write( str( datetime.now() ) + " - constructing sequence clusters...\n" )
+			sys.stdout.flush()
 			get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, min_intersection_cutoff )
-
+			sys.stdout.write( str( datetime.now() ) + " ... sequence clustering completed.\n" )
+			sys.stdout.flush()
+			
 		# --- construct phylogenetic trees for each of them and highlight co-expressed genes --- #
+		sys.stdout.write( str( datetime.now() ) + " - starting construction of phylogenetic trees...\n" )
+		sys.stdout.flush()
 		fasta_input_files = glob.glob( aln_folder + "*.pep.fasta" )
 		for filename in fasta_input_files:
 			name = filename.split('/')[-1].split('.')[0]
 			tree_constructor( filename, treemethod, tree_folder, name, alnmethod, mafft, muscle, raxml, fasttree, iqtree, cpur )
-		
+		sys.stdout.write( str( datetime.now() ) + " ... construction of phylogenetic trees completed.\n" )
+		sys.stdout.flush()
 		
 		# --- identify and define orthogroups --- #
 		#find "coexp" sequences that are clustered = calculate distances between them and check for edges < number of species
