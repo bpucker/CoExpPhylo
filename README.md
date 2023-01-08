@@ -60,6 +60,14 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 
 `--out` specifies the output folder. All temporary file and the final output files will be placed in this folder. The folder will be created if it does not exist already.
 
+`--mode` specifies the way how the different steps are performed:
+
+'all' runs all steps in a consecutive way without parallelisation. The script needs to be started once and will run for a long time depending on the number of analyzed data sets.
+
+'cmd' will only write the computationally intense commands into text files to allow external execution e.g. on a high performance compute cluster. The script needs to be run in the 'cmd' mode three times to complete the entire analysis. '--coexp_script_path' defines the path to a helper script required for the external co-expression analysis. These external jobs need to be completed before the BLAST jobs can be written into the text file. Once the BLAST jobs are completed, the script is started a third time to complete the analysis by integrating all results.
+
+Default: 'all'.
+
 `--anno` specifies an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
 
 `--araport` specifies the Araport11 peptide sequence file as reference for the analysis. This allows an effective annotation in the final steps.
@@ -69,6 +77,8 @@ Bait sequence ID file = This file contains the ID of genes that should be used a
 `--p` specifies the maximal p-value in the correlation calculation for genes to be considered. The default value is 0.05.
 
 `--numcut` specifies the maximal number of genes to consider in the co-expression analysis. Only these top sequences are analyzed in the next steps. The default value is 100. An increase of this number will substantially increase the run time.
+
+`--min_exp_cutoff` specifies the minimal combined expression of a any given gene to be considered in the co-expression analysis. Default: 30.
 
 `--cpu` specifies the number of cores for BLAST and other operations. The default value is 4.
 
