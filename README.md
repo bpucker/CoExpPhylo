@@ -12,38 +12,38 @@ Usage:
   python3 coexp_phylo.py --config <FILE> --out <DIR>
 
 Mandatory:
-  --config   STR    Config file.
-  --out      STR    Directory for temporary and output files.
+  --config             STR    Config file.
+  --out                STR    Directory for temporary and output files.
+  --mode               STR    Mode to run tool (all|cmd)[all]
  
 		
 Optional:
-  --anno            STR     Annotation file matching reference
-  --araport         STR     Araport11 peptide file
-  --r               FLOAT   Correlation coefficient cutoff [0.7]
-  --p               FLOAT   P-value cutoff [0.05]
-  --numcut          INT     Number of co-expressed genes [100]
-  --min_exp_cutoff  INT     Minimal expression per gene[30]
-  --cpu             INT     Number of cores to use [4]
-  --scorecut        FLOAT   Minimal BLAST hit score cutoff [100.0]
-  --simcut          FLOAT   Minimal BLAST hit similarity cutoff [60.0]
-  --lencut          INT     Minimal BLAST hit length cutoff [100]
+  --anno               STR     Annotation file matching reference
+  --araport            STR     Araport11 peptide file
+  --r                  FLOAT   Correlation coefficient cutoff [0.7]
+  --p                  FLOAT   P-value cutoff [0.05]
+  --numcut             INT     Number of co-expressed genes [100]
+  --min_exp_cutoff     INT     Minimal expression per gene[30]
+  --cpu                INT     Number of cores to use [4]
+  --scorecut           FLOAT   Minimal BLAST hit score cutoff [100.0]
+  --simcut             FLOAT   Minimal BLAST hit similarity cutoff [60.0]
+  --lencut             INT     Minimal BLAST hit length cutoff [100]
   
-  --alnmethod       STR     Alignment algorithm (mafft|muscle)[mafft]
-  --treemethod      STR     Tree construction algorithm (fasttree|raxml|iqtree) [fasttree]
+  --alnmethod          STR     Alignment algorithm (mafft|muscle)[mafft]
+  --treemethod         STR     Tree construction algorithm (fasttree|raxml|iqtree) [fasttree]
     
-  --mafft           STR     Full path to MAFFT [mafft]
-  --raxml           STR     Full path to RAxML [raxml]
-  --fasttree        STR     Full path to FastTree [fasttree]
-  --iqtree          STR     Full path to IQ-TREE [iqtree]
-  --cpur            INT     Number of cores for tree construction [cpu]
+  --mafft              STR     Full path to MAFFT [mafft]
+  --raxml              STR     Full path to RAxML [raxml]
+  --fasttree           STR     Full path to FastTree [fasttree]
+  --iqtree             STR     Full path to IQ-TREE [iqtree]
+  --cpur               INT     Number of cores for tree construction [cpu]
   
-  --mindetect <MIN_NUMBER_OF_COEXPED_BAITS>[1]
-  --minseqcutoff <MIN_SEQ_CLUSTER_SIZE>[10]
-  --mincoexpseqcutoff <MIN_COEXPED_GENES_FOR_CLUSTER>[10]
-  --minintersec <INTERSEC_BETWEEN_CLUSTERS_FOR_MERGE>[0]
+  --mindetect          INT     Minimal number of coexpressed baits[1]
+  --minseqcutoff       INT     Minimal sequence cluster size [10]
+  --mincoexpseqcutoff  INT     Minimal number of coexpressed genes to form cluster [10]
+  --minintersec        INT     Intersection between clusters to trigger merge [0]
 					
-  --coexp_script_path <PATH_TO_HELPER_SCRIPT>[coexp_helper.py]
-  
+  --coexp_script_path  STR     Path to coexp helper script [coexp_helper.py]
 ```
 
 
