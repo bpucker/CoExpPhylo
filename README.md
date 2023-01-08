@@ -94,9 +94,13 @@ Default: 'all'.
 
 `--mafft` specifies the MAFFT path. This option can be used if MAFFT is not in the PATH variable or if a specific version should be used. The default is 'mafft'.
 
+`--muscle` specifies the MUSCLE path. This option can be used if MUSCLE is not in the PATH variable or if a specific version should be used. The default is 'muscle'.
+
 `--raxml` species the RAxML path. This option can be used if RAxML is not in the PATH variable or if a specific version should be used. The default is 'raxml'.
 
 `--fasttree` species the full path to FastTree. This option can be used if FastTree is not in the PATH variable or if a specific version should be used. The default is 'fasttree'.
+
+`--iqtree` species the full path to IQ-TREE. This option can be used if IQ-TREE is not in the PATH variable or if a specific version should be used. The default is 'iqtree'.
 
 `--cpur` species the number of cores that are used for the tree construction. Default is the value of `--cpu` or 4 if no other value is set.
 
