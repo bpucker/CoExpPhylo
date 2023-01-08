@@ -109,11 +109,11 @@ Default: 'all'.
 
 `--mindetect` specifies the minimal number of baits that any given gene needs to be co-expressed with. Depending on the number of baits, this value can be increased. A higher value will generally boost the specificity at the cost of sensitivity. The strictes possible option is setting this number to the number of baits. Default: 1.
 
-`--minseqcutoff` #minimal number of sequences to compose a group as tree construction input. Default: 10.
+`--minseqcutoff` specifies the minimal number of sequences that must belong to a cluster to trigger the construction of a phylogenetic tree. Extremely small clusters are masked to avoids inflation of cluster numbers. Default: 10.
 
-`--mincoexpseqcutoff` #minimal number of co-expressed sequences to compose a group as tree construction input. Default: 10.
+`--mincoexpseqcutoff` specifies the minimal number of co-expressed genes that must be in the same sequence cluster (tree). Multiple co-expressed sequences of different species are supporting a relevance of this group in association with the baits. Default: 10.
 
-`--minintersec` #minimal intersection between two sequence clusters that needs to be exceeded to trigger merging. Default: 0.
+`--minintersec` specifies the minimal intersection between sequence clusters that needs to be exceeded to trigger a merge of both clusters. Clusters should be merged at small overlap to avoid redundancies. Default: 0.
 
 `--coexp_script_path` specifies the path to the co-expression helper script required for external execution of the computationally intense part of the co-expression analysis. This is only required if the mode is 'cmd'. Default: coexp_helper.py (script expected in the working directory).
 
