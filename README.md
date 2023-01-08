@@ -17,20 +17,33 @@ Mandatory:
  
 		
 Optional:
-  --anno     STR     Annotation file matching reference
-  --araport  STR     Araport11 peptide file
-  --r        FLOAT   Correlation coefficient cutoff [0.7]
-  --p        FLOAT   P-value cutoff [0.05]
-  --numcut   INT     Number of co-expressed genes [100]
-  --cpu      INT     Number of cores to use [4]
-  --scorecut FLOAT   Minimal BLAST hit score cutoff [100.0]
-  --simcut   FLOAT   Minimal BLAST hit similarity cutoff [60.0]
-  --lencut   INT     Minimal BLAST hit length cutoff [100]
-  --mode     STR     Tree construction algorithm (fasttree|raxml) [fasttree]
-  --mafft    STR     Full path to MAFFT [mafft]
-  --raxml    STR     Full path to RAxML [raxml]
-  --fasttree STR     Full path to FastTree [fasttree]
-  --cpur     INT     Number of cores for tree construction [cpu]
+  --anno            STR     Annotation file matching reference
+  --araport         STR     Araport11 peptide file
+  --r               FLOAT   Correlation coefficient cutoff [0.7]
+  --p               FLOAT   P-value cutoff [0.05]
+  --numcut          INT     Number of co-expressed genes [100]
+  --min_exp_cutoff  INT     Minimal expression per gene[30]
+  --cpu             INT     Number of cores to use [4]
+  --scorecut        FLOAT   Minimal BLAST hit score cutoff [100.0]
+  --simcut          FLOAT   Minimal BLAST hit similarity cutoff [60.0]
+  --lencut          INT     Minimal BLAST hit length cutoff [100]
+  
+  --alnmethod       STR     Alignment algorithm (mafft|muscle)[mafft]
+  --treemethod      STR     Tree construction algorithm (fasttree|raxml|iqtree) [fasttree]
+    
+  --mafft           STR     Full path to MAFFT [mafft]
+  --raxml           STR     Full path to RAxML [raxml]
+  --fasttree        STR     Full path to FastTree [fasttree]
+  --iqtree          STR     Full path to IQ-TREE [iqtree]
+  --cpur            INT     Number of cores for tree construction [cpu]
+  
+  --mindetect <MIN_NUMBER_OF_COEXPED_BAITS>[1]
+  --minseqcutoff <MIN_SEQ_CLUSTER_SIZE>[10]
+  --mincoexpseqcutoff <MIN_COEXPED_GENES_FOR_CLUSTER>[10]
+  --minintersec <INTERSEC_BETWEEN_CLUSTERS_FOR_MERGE>[0]
+					
+  --coexp_script_path <PATH_TO_HELPER_SCRIPT>[coexp_helper.py]
+  
 ```
 
 
