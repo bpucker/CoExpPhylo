@@ -3,12 +3,13 @@
 
 ### some functions taken from MYB_annotator.py and KIPEs ###
 
-__version__ = "v0.11"
+__version__ = "v0.12"
 
 __usage__ = """
 					python3 coexp_phylo.py
 					--config <CONFIG_FILE>
 					--out <OUTPUT_FOLDER>
+					--mode <RUNNING_MODE>(all|cmd)[all]
 					
 					optional:
 					--anno <ANNOTATION_FILE>
@@ -20,12 +21,16 @@ __usage__ = """
 					--scorecut <MIN_BLAST_SCORE_CUTOFF>
 					--simcut <MIN_BLAST_SIMILARITY_CUTOFF>
 					--lencut <MIN_BLAST_LENGTH_CUTOFF>
-					--method <TREE_ALGORITHM>(fasttree|raxml|iqtree)[fasttree]
+					--alnmethod <ALIGNMENT_ALGORITH>(mafft|muscle)[mafft]
+					--treemethod <TREE_ALGORITHM>(fasttree|raxml|iqtree)[fasttree]
 					--mafft <MAFFT_PATH>[mafft]
+					--muscle <MUSCLE_PATH>[muscle]
 					--raxml <RAXML_PATH>[raxml]
 					--fasttree <FASTTREE_PATH>[FastTree]
 					--iqtree <IQ-TREE_PATH>[iqtree]
 					--cpur <CPUs_FOR_TREE_CONSTRUCTION>[cpu]
+					
+					--coexp_script_path <PATH_TO_HELPER_SCRIPT>[coexp_helper.py]
 					"""
 
 import os, re, sys, subprocess, math, glob, time
@@ -161,7 +166,7 @@ def load_expression_values( filename, spec_prefix ):
 	return expression_data
 
 
-def compare_candidates_against_all( candidate, gene_expression, rcutoff, pvaluecutoff, coexpnumcutoff ):
+def compare_candidates_against_all( candidate, gene_expression, rcutoff, pvaluecutoff, coexpnumcutoff, min_exp_cutoff ):
 	"""! @brief compare candidate gene expression against all genes to find co-expressed genes
 		@return list of co-expressed genes that passed the filters
 	"""
@@ -181,14 +186,15 @@ def compare_candidates_against_all( candidate, gene_expression, rcutoff, pvaluec
 						values.append( [ x, y ] )
 				except KeyError:
 					pass
-			if total_expression > 30:	#only consider genes with a minimal expression level
+			if total_expression > min_exp_cutoff:	#only consider genes with a minimal expression level
 				if len( values ) > 0:
 					r, p = stats.spearmanr( values )
 					if not math.isnan( r ):
 						if r > rcutoff and p < pvaluecutoff:
 							coexpressed_genes.append( { 'id': gene2, 'correlation': r, 'p_value': p } )
 				else:
-					print ( "WARNING: no expression detected - " + candidate + "\t" + gene2 + "\t" + ";".join( list( gene_expression.keys() )[:5] ) )
+					sys.stdout.write ( "WARNING: no expression detected - " + candidate + "\t" + gene2 + "\t" + ";".join( list( gene_expression.keys() )[:5] ) + "\n" )
+					sys.stdout.flush()
 	coexp_gene_IDs = []
 	for gene in sorted( coexpressed_genes, key=itemgetter('correlation') )[::-1][:coexpnumcutoff]:
 		coexp_gene_IDs.append( gene['id'] )
@@ -286,7 +292,7 @@ def alignment_trimming( aln_file, cln_aln_file, occupancy ):
 			out.write( "" )
 
 
-def tree_constructor( X_aln_input_file, method, X_output_folder, Xname, mafft, raxml, fasttree, iqtree, cpur ):
+def tree_constructor( X_aln_input_file, treemethod, X_output_folder, Xname, alnmethod, mafft, muscle, raxml, fasttree, iqtree, cpur ):
 	"""! @brief handles the construction of alignments and phylogenetic tree
 			@note second FASTA file can be an empty string to run this function just based on one FASTA file
 	"""
@@ -294,23 +300,27 @@ def tree_constructor( X_aln_input_file, method, X_output_folder, Xname, mafft, r
 	X_aln_file = X_aln_input_file + ".aln"
 	X_cln_aln_file = X_aln_file + ".cln"
 	
-	# --- generate MAFFT alignment --- #
+	# --- generate alignment --- #
 	if not os.path.isfile( X_aln_file ):
-		p = subprocess.Popen( args= mafft + " --quiet " + X_aln_input_file + " > " + X_aln_file, shell=True )
-		p.communicate()
+		if alnmethod == "muscle":
+			p = subprocess.Popen( args= muscle + " -align " + X_aln_input_file + " -output " + X_aln_file, shell=True )
+			p.communicate()
+		else:
+			p = subprocess.Popen( args= mafft + " --quiet " + X_aln_input_file + " > " + X_aln_file, shell=True )
+			p.communicate()
 	
 	# --- trim alignment i.e. remove positions with many gaps = low occupancy --- #
 	if not os.path.isfile( X_cln_aln_file ):
 		alignment_trimming( X_aln_file, X_cln_aln_file, occupancy=0.1 )
 	
-	if method == "raxml":	#construct tree with RAxML
+	if treemethod == "raxml":	#construct tree with RAxML
 		prefix = X_output_folder + Xname + "RAxML_tree"
 		tree_file = prefix + ".raxml.bestTree.tre"
 		if not os.path.isfile( tree_file ):
 			p = subprocess.Popen( args= " ".join( [ raxml, "--all --threads " + str( cpur ) + " --model LG+G8+F --msa", X_cln_aln_file, "--prefix", prefix ] ), shell=True )
 			p.communicate()
 	
-	elif method == "iqtree":	#construct tree with IQ-TREE
+	elif treemethod == "iqtree":	#construct tree with IQ-TREE
 		tree_file = X_cln_aln_file + ".treefile"	#".treefile" is appended to provided alignment file name
 		if not os.path.isfile( tree_file ):
 			p = subprocess.Popen( args= " ".join( [ iqtree, + " -nt " + str( cpur ) + " -alrt 1000 -bb 100 -s", X_cln_aln_file, "--prefix", prefix ] ), shell=True )
@@ -406,10 +416,12 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 	with open( annotation_file, "w" ) as anno_out:
 		counter = 0
 		for fg in final_groups:
-			print ( len( fg ) )
+			sys.stdout.write( str( len( fg ) ) + "\n" )
+			sys.stdout.flush()
 			if len( fg ) > minseqcutoff:
 				coexpseqcounter = count_exp_seqs( fg )
-				print ( "coexp: " + str( coexpseqcounter ) )
+				sys.stdout.write( "coexp: " + str( coexpseqcounter ) + "\n" )
+				sys.stdout.flush()
 				if coexpseqcounter > mincoexpseqcutoff:
 					counter += 1
 					group_sequence_file = aln_folder + str( counter ).zfill( 3 ) + ".pep.fasta"	#save all sequenes of a group in a FASTA file
@@ -428,8 +440,11 @@ def main( arguments ):
 	
 	config_file = arguments[ arguments.index('--config')+1 ]
 	#ID,tpm,cds,baits
-	#ID = species ID; tpm= tpm file; cds = CDS file; baits = IDs of interest in file
+	#ID = species ID/name; tpm= tpm file; cds = CDS file; baits = IDs of interest in file
 	output_folder = arguments[ arguments.index('--out')+1 ]
+	mode = arguments[ arguments.index('--mode')+1 ]	#different functionalities of script can be used: all or only command preparation
+	#all: run everything
+	#cmd: write commands into output files and do nothing
 	
 	if '--anno' in arguments:
 		anno_file = arguments[ arguments.index('--anno')+1 ]
@@ -468,11 +483,21 @@ def main( arguments ):
 	mindetection = 1	#number of bait genes that a given sequence need to be co-expressed with to be considered (strict would be equal to number of baits)
 	minseqcutoff = 10	#minimal number of sequences to compose a group as tree construction input
 	mincoexpseqcutoff = 3	#minimal number of co-expressed sequences to compose a group as tree construction input
+	min_exp_cutoff = 30	#minimal cumulative expression per gene to be considered in the co-expresssion analysis
 	
+	if '--alnmethod' in arguments:	#alignment method
+		alnmethod = arguments[ arguments.index('--alnmethod')+1 ]
+	else:
+		alnmethod = "mafft"
 	if '--mafft' in arguments:	#path to MAFFT (alignment)
 		mafft = arguments[ arguments.index('--mafft')+1 ]
 	else:
 		mafft = "mafft"
+	if '--muscle' in arguments:	#path to MUSCLE (alignment)
+		muscle = arguments[ arguments.index('--muscle')+1 ]
+	else:
+		muscle = "muscle"
+	
 	if '--raxml' in arguments:	#path to RAxML (tree construction)
 		raxml = arguments[ arguments.index('--raxml')+1 ]
 	else:
@@ -491,20 +516,24 @@ def main( arguments ):
 	else:
 		cpur = min( [ 4, cpu ] )
 	
-	if '--method' in arguments:	#tree construction methods
-		method = arguments[ arguments.index('--method')+1 ]
-		if method not in [ "fasttree", "raxml", "iqtree" ]:
-			method = "fasttree"
+	if '--treemethod' in arguments:	#tree construction methods
+		treemethod = arguments[ arguments.index('--treemethod')+1 ]
+		if treemethod not in [ "fasttree", "raxml", "iqtree" ]:
+			treemethod = "fasttree"
 	else:
-		method = "fasttree"
+		treemethod = "fasttree"
 	
-		
 	if '--araport' in arguments:
 		araport_seq_file = arguments[ arguments.index('--araport')+1 ]
 	else:
 		araport_seq_file = ""
 	
 	min_intersection_cutoff = 0	#minimal intersection between two sequence clusters that needs to be exceeded to trigger merging
+	
+	if '--coexp_script_path' in arguments:
+		coexp_script_path = arguments[ arguments.index('--coexp_script_path')+1 ]
+	else:
+		coexp_script_path = "coexp_helper.py"	#needs coexp helper script path
 	
 	
 	if output_folder[-1] != "/":
@@ -524,101 +553,159 @@ def main( arguments ):
 	else:
 		anno_mapping_table = {}
 	
+	### ---- BIG LOOP OVER ALL SPECIES --- ###
 	huge_seq_collection_file = output_folder + "huge_seq_collection.cds.fasta"
 	huge_seq_collection_file_pep = output_folder + "huge_seq_collection.pep.fasta"
 	if not os.path.isfile( huge_seq_collection_file ):
 		huge_seq_collection = {}
+		if mode == "cmd":
+			coexp_cmd_file = output_folder + "COEXP_COMMANDS.txt"
+			blast_cmd_file = output_folder + "BLAST_COMMANDS.txt"
 		# --- run co-expression per species --- #
 		for spec in list( config_data.keys() ):
 			info = config_data[ spec ]
-			exp = load_expression_values( info['tpm'], info['id'] )
-			combined_coexp_genes = []
-			for gene in info['baits']:
-				combined_coexp_genes += compare_candidates_against_all( gene, exp, rcutoff, pvaluecutoff, coexpnumcutoff )
-			unique_combined_coexp_genes = list( set( combined_coexp_genes ) )
-			valid_coexp_genes = []
-			for gene in unique_combined_coexp_genes:
-				if combined_coexp_genes.count( gene ) >= mindetection:	#this slects genes co-expressed with entire pathway
-					valid_coexp_genes.append( gene )
-			config_data[ spec ].update( { 'coexp': valid_coexp_genes } )
-		
-			# --- run BLAST search of top X co-expressed genes against all other species --- #
-			baits_file = tmp_folder + spec + ".baits.fasta"
-			with open( baits_file, "w" ) as out:
-				info = config_data[ spec ]
-				for gene in info['coexp']:
-					out.write( '>' + gene + "\n" + info['pep'][ gene ] + "\n"  )
+			coexp_result_file = tmp_folder + info['id'] + "_coexp_results.txt"
 			
-			for gene in valid_coexp_genes:	#add all sequences with co-expression to huge collection
-				try:
-					del huge_seq_collection[ gene ]	#delete sequence entry that does not show coexpression (in other species)
-				except:
-					pass
-				try:
-					huge_seq_collection[ gene + "_coexp" ]
-				except KeyError:
-					huge_seq_collection.update( { gene + "_coexp": config_data[ spec ]['cds'][ gene ] } )	#only add new sequence if not present yet
-			
-			for spec2 in list( config_data.keys() ):
-				if spec != spec2:
-					blast_result_file = tmp_folder + spec + "_vs_" + spec2 + "blasthits.txt"	#run BLASTp search against each other species
-					blastdb = tmp_folder + spec2 + "_blastdb"
-					if not os.path.isfile( blast_result_file ):
-						p = subprocess.Popen( args= "makeblastdb -in " + config_data[ spec2 ]['pep_file'] + " -out " + blastdb + " -dbtype prot", shell=True )
-						p.communicate()
-						p = subprocess.Popen( args= "blastp -query " + baits_file+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
-						p.communicate()
-					hits = load_blast_hits( blast_result_file, scorecut, simcut, lencut )	# lists of sequence IDs
+			# --- co-expression analysis needs to be run --- #
+			if not os.path.isfile( coexp_result_file ):
+				# --- run co-expression analysis --- #
+				if mode == "all":
+					exp = load_expression_values( info['tpm'], info['id'] )
+					combined_coexp_genes = []
+					for gene in info['baits']:
+						combined_coexp_genes += compare_candidates_against_all( gene, exp, rcutoff, pvaluecutoff, coexpnumcutoff, min_exp_cutoff )
+					unique_combined_coexp_genes = list( set( combined_coexp_genes ) )
+					valid_coexp_genes = []
+					for gene in unique_combined_coexp_genes:
+						if combined_coexp_genes.count( gene ) >= mindetection:	#this slects genes co-expressed with entire pathway
+							valid_coexp_genes.append( gene )
+					config_data[ spec ].update( { 'coexp': valid_coexp_genes } )
+					with open( coexp_result_file, "w" ) as out:
+						out.write( "\n".join( valid_coexp_genes ) )
 					
-					for hit in hits:	#add all sequences from other species to huge collection
-						try:
-							huge_seq_collection[ hit + "_coexp"]	#check that this sequence was not coexpressed in another species
-						except:
-							try:
-								huge_seq_collection[ hit ]
-							except KeyError:
-								huge_seq_collection.update( { hit: config_data[ spec2 ]['cds'][ hit ] } )
-		with open( huge_seq_collection_file, "w" ) as out:
-			for key in huge_seq_collection.keys():
-				out.write( '>' + key + '\n' + huge_seq_collection[ key ] + "\n" )
+				# --- write command for co-expression analysis / process results of external analysis --- #
+				elif mode == "cmd":
+					if not os.path.isfile( coexp_result_file ):
+						with open( coexp_cmd_file, "a" ) as coexp_command_out:
+							current_coexp_cmd = "".join( [ 	"python3 ", coexp_script_path, 
+																				" --exp ", info['tpm'],
+																				" --specid ", info['id'],
+																				" --genes ", "@@@".join( info['baits'] ),
+																				" --rcutoff ", str( rcutoff ),
+																				" --pvaluecutoff ", str( pvaluecutoff ),
+																				" --coexpnumcutoff ", str( coexpnumcutoff ),
+																				" --min_exp_cutoff ", str( min_exp_cutoff ),
+																				" --mindetection ", str( mindetection ),
+																				" --output ", coexp_result_file
+																			] )
+							coexp_command_out.write( current_coexp_cmd + "\n" )
+			
+			# --- co-expression results are already available --- #
+			else:
+				with open( coexp_result_file, "r" ) as f:
+					valid_coexp_genes = []
+					for each in f.read().strip().split('\n'):
+						if len( each ) > 1:
+							valid_coexp_genes.append( each )
+					config_data[ spec ].update( { 'coexp': valid_coexp_genes } )
+			
+			if os.path.isfile( coexp_result_file ):	#next step is only possible if co-expression results are available
+				# --- run BLAST search of top X co-expressed genes against all other species --- #
+				baits_file = tmp_folder + spec + ".baits.fasta"
+				if not os.path.isfile( baits_file ):
+					with open( baits_file, "w" ) as out:
+						info = config_data[ spec ]
+						for gene in info['coexp']:
+							out.write( '>' + gene + "\n" + info['pep'][ gene ] + "\n"  )
+				
+				for gene in valid_coexp_genes:	#add all sequences with co-expression to huge collection with a "_coexp" tag
+					try:
+						del huge_seq_collection[ gene ]	#delete sequence entry that does not show coexpression (in other species)
+					except:
+						pass
+					try:
+						huge_seq_collection[ gene + "_coexp" ]
+					except KeyError:
+						huge_seq_collection.update( { gene + "_coexp": config_data[ spec ]['cds'][ gene ] } )	#only add new sequence if not present yet
+				
+				for spec2 in list( config_data.keys() ):
+					if spec != spec2:
+						blast_result_file = tmp_folder + spec + "_vs_" + spec2 + "blasthits.txt"	#run BLASTp search against each other species
+						blastdb = tmp_folder + spec2 + "_blastdb"
+						if not os.path.isfile( blast_result_file ):
+							if mode == "all":	#run BLAST search directly
+								p = subprocess.Popen( args= "makeblastdb -in " + config_data[ spec2 ]['pep_file'] + " -out " + blastdb + " -dbtype prot", shell=True )
+								p.communicate()
+								p = subprocess.Popen( args= "blastp -query " + baits_file+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
+								p.communicate()
+							elif mode == "cmd":	#write BLAST command into output file
+								with open( blast_cmd_file, "a" ) as blast_command_out:
+									current_db_cmd = "makeblastdb -in " + config_data[ spec2 ]['pep_file'] + " -out " + blastdb + " -dbtype prot"
+									current_search_cmd = "blastp -query " + baits_file+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu )
+									blast_command_out.write( current_db_cmd + " && " + current_search_cmd + "\n" )
+						
+						if os.path.isfile( blast_result_file ):
+							hits = load_blast_hits( blast_result_file, scorecut, simcut, lencut )	# lists of sequence IDs
+							
+							for hit in hits:	#add all sequences from other species to huge collection
+								try:
+									huge_seq_collection[ hit + "_coexp"]	#check that this sequence was not coexpressed in another species
+								except:
+									try:
+										huge_seq_collection[ hit ]
+									except KeyError:
+										huge_seq_collection.update( { hit: config_data[ spec2 ]['cds'][ hit ] } )
+		
+		# --- check if at least one non-coexpressed sequence is included in the collection --- #
+		non_coexp_included = False
+		for key in list( huge_seq_collection.keys() ):
+			if not "_coexp" in key:
+				non_coexp_included = True
+				break
+		if non_coexp_included:	#only continue if at BLAST-based sequence collection completed (at least one non-coexpressed sequence included)
+			with open( huge_seq_collection_file, "w" ) as out:
+				for key in huge_seq_collection.keys():
+					out.write( '>' + key + '\n' + huge_seq_collection[ key ] + "\n" )
 	else:
 		huge_seq_collection = load_sequences( huge_seq_collection_file )
 	
-	# --- run BLAST all vs. all for huge sequence collection --- #
-	huge_pep_collection = translate( huge_seq_collection )
-	with open( huge_seq_collection_file_pep, "w" ) as out:
-		for key in list( huge_pep_collection.keys() ):
-			out.write( '>' + key + '\n' + huge_pep_collection[ key ] + "\n" )
-	blastdb = tmp_folder + "huge_blastdb"
-	blast_result_file = tmp_folder + "huge_blast_result_file.txt"
-	if not os.path.isfile( blast_result_file ):
-		p = subprocess.Popen( args= "makeblastdb -in " + huge_seq_collection_file_pep + " -out " + blastdb + " -dbtype prot", shell=True )
-		p.communicate()
-		p = subprocess.Popen( args= "blastp -query " + huge_seq_collection_file_pep+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
-		p.communicate()
-	blast_results = load_hits_per_bait( blast_result_file, scorecut, simcut, lencut )
-	
-	tree_folder = output_folder + "trees/"
-	if not os.path.exists( tree_folder ):
-		os.makedirs( tree_folder )
-	aln_folder = output_folder + "aln/"
-	if not os.path.exists( aln_folder ):
-		os.makedirs( aln_folder )
-	
-	# --- identify groups within the huge sequence collection --- #
-	annotation_file = output_folder + "functional_annotation_of_clusters.txt"
-	if not os.path.isfile( annotation_file ):
-		get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, min_intersection_cutoff )
+	### --- FINAL PART --- ###
+	if os.path.isfile( huge_seq_collection_file ):
+		# --- run BLAST all vs. all for huge sequence collection --- #
+		huge_pep_collection = translate( huge_seq_collection )
+		with open( huge_seq_collection_file_pep, "w" ) as out:
+			for key in list( huge_pep_collection.keys() ):
+				out.write( '>' + key + '\n' + huge_pep_collection[ key ] + "\n" )
+		blastdb = tmp_folder + "huge_blastdb"
+		blast_result_file = tmp_folder + "huge_blast_result_file.txt"
+		if not os.path.isfile( blast_result_file ):
+			p = subprocess.Popen( args= "makeblastdb -in " + huge_seq_collection_file_pep + " -out " + blastdb + " -dbtype prot", shell=True )
+			p.communicate()
+			p = subprocess.Popen( args= "blastp -query " + huge_seq_collection_file_pep+ " -db " + blastdb + " -out " + blast_result_file + " -outfmt 6 -evalue 0.001 -num_threads " + str( cpu ), shell=True )
+			p.communicate()
+		blast_results = load_hits_per_bait( blast_result_file, scorecut, simcut, lencut )
+		
+		tree_folder = output_folder + "trees/"
+		if not os.path.exists( tree_folder ):
+			os.makedirs( tree_folder )
+		aln_folder = output_folder + "aln/"
+		if not os.path.exists( aln_folder ):
+			os.makedirs( aln_folder )
+		
+		# --- identify groups within the huge sequence collection --- #
+		annotation_file = output_folder + "functional_annotation_of_clusters.txt"
+		if not os.path.isfile( annotation_file ):
+			get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, min_intersection_cutoff )
 
-	# --- construct phylogenetic trees for each of them and highlight co-expressed genes --- #
-	fasta_input_files = glob.glob( aln_folder + "*.pep.fasta" )
-	for filename in fasta_input_files:
-		name = filename.split('/')[-1].split('.')[0]
-		tree_constructor( filename, method, tree_folder, name, mafft, raxml, fasttree, iqtree, cpur )
-	
-	
-	# --- identify and define orthogroups --- #
-	#find "coexp" sequences that are clustered = calculate distances between them and check for edges < number of species
+		# --- construct phylogenetic trees for each of them and highlight co-expressed genes --- #
+		fasta_input_files = glob.glob( aln_folder + "*.pep.fasta" )
+		for filename in fasta_input_files:
+			name = filename.split('/')[-1].split('.')[0]
+			tree_constructor( filename, treemethod, tree_folder, name, alnmethod, mafft, muscle, raxml, fasttree, iqtree, cpur )
+		
+		
+		# --- identify and define orthogroups --- #
+		#find "coexp" sequences that are clustered = calculate distances between them and check for edges < number of species
 
 
 
