@@ -107,7 +107,7 @@ Default: 'all'.
 `--cpur` species the number of cores that are used for the tree construction. Default is the value of `--cpu` or 4 if no other value is set.
 
 
-`--mindetect` #number of bait genes that a given sequence need to be co-expressed with to be considered (strict would be equal to number of baits). Default: 1.
+`--mindetect` specifies the minimal number of baits that any given gene needs to be co-expressed with. Depending on the number of baits, this value can be increased. A higher value will generally boost the specificity at the cost of sensitivity. The strictes possible option is setting this number to the number of baits. Default: 1.
 
 `--minseqcutoff` #minimal number of sequences to compose a group as tree construction input. Default: 10.
 
