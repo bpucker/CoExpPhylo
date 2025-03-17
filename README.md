@@ -142,7 +142,7 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 
 `--muscle` specifies the MUSCLE path. This option can be used if MUSCLE is not in the PATH variable or if a specific version should be used. The default is 'muscle'.
 
-`occupancy` specifies the minimum column occupancy threshold for the multiple sequence alignment. Only alignment columns where at least the specified fraction of sequences contain a residue (i.e., are not gaps `-`) are retained for further analysis. The default value is 0.1.
+`--occupancy` specifies the minimum column occupancy threshold for the multiple sequence alignment. Only alignment columns where at least the specified fraction of sequences contain a residue (i.e., are not gaps `-`) are retained for further analysis. The default value is 0.1.
 
 #### Tree construction
 `--treemethod` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clusters are identified. Currently, FastTree, RAxML, and IQ-TREE are the supported options. Default is FastTree.
