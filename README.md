@@ -138,20 +138,20 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 #### Alignment
 `--alnmethod` specifies the algorithm/tool used for construction of the multiple sequence alignment as basis of the phylogenetic tree construction. Currently, MAFFT and MUSCLE are the supported options. Default is MAFFT.
 
-`--mafft` specifies the MAFFT path. This option can be used if MAFFT is not in the PATH variable or if a specific version should be used. The default is 'mafft'.
+`--mafft` specifies the MAFFT path. This option can be used if MAFFT is not in the `$PATH` variable or if a specific version should be used. The default is 'mafft'.
 
-`--muscle` specifies the MUSCLE path. This option can be used if MUSCLE is not in the PATH variable or if a specific version should be used. The default is 'muscle'.
+`--muscle` specifies the MUSCLE path. This option can be used if MUSCLE is not in the `$PATH` variable or if a specific version should be used. The default is 'muscle'.
 
 `--occupancy` specifies the minimum column occupancy threshold for the multiple sequence alignment. Only alignment columns where at least the specified fraction of sequences contain a residue (i.e., are not gaps `-`) are retained for further analysis. The default value is 0.1.
 
 #### Tree construction
 `--treemethod` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clusters are identified. Currently, FastTree, RAxML, and IQ-TREE are the supported options. Default is FastTree.
 
-`--raxml` specifies the RAxML path. This option can be used if RAxML is not in the PATH variable or if a specific version should be used. The default is 'raxml'.
+`--raxml` specifies the RAxML path. This option can be used if RAxML is not in the `$PATH` variable or if a specific version should be used. The default is 'raxml'.
 
-`--fasttree` specifies the full path to FastTree. This option can be used if FastTree is not in the PATH variable or if a specific version should be used. The default is 'fasttree'.
+`--fasttree` specifies the full path to FastTree. This option can be used if FastTree is not in the `$PATH` variable or if a specific version should be used. The default is 'fasttree'.
 
-`--iqtree` specifies the full path to IQ-TREE. This option can be used if IQ-TREE is not in the PATH variable or if a specific version should be used. The default is 'iqtree'.
+`--iqtree` specifies the full path to IQ-TREE. This option can be used if IQ-TREE is not in the `$PATH` variable or if a specific version should be used. The default is 'iqtree'.
 
 
 #### Batch uplaod to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268) [^1])
