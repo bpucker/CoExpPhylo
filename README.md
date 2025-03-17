@@ -115,8 +115,12 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 
 `--min_exp_cutoff` specifies the minimal combined expression of a any given gene to be considered in the co-expression analysis. Default: 30.
 
+`--mindetect` specifies the minimal number of baits that any given gene needs to be co-expressed with. Depending on the number of baits, this value can be increased. A higher value will generally boost the specificity at the cost of sensitivity. The strictes possible option is setting this number to the number of baits. Default: 1.
+
 #### DIAMOND
 `--cpub` specifies the number of cores for DIAMOND blastp and other operations. The default value is 4.
+
+`--batch` specifies the number of blastp jobs to run in parallel. The default value is 7.
 
 `--scorecut` specifies the minimal BLAST score cutoff for hits to be considered. The default value is 100. The value is relevant for the construction of sequence clusters once co-expressed genes have been identified.
 
@@ -127,8 +131,6 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 `--evalue` specifies the maximal e-value of a DIAMOND blast hit to be considered. The default value is 10<sup>-5</sup>.
 
 #### Clustering
-`--mindetect` specifies the minimal number of baits that any given gene needs to be co-expressed with. Depending on the number of baits, this value can be increased. A higher value will generally boost the specificity at the cost of sensitivity. The strictes possible option is setting this number to the number of baits. Default: 1.
-
 `--minseqcutoff` specifies the minimal number of sequences that must belong to a cluster to trigger the construction of a phylogenetic tree. Extremely small clusters are masked to avoids inflation of cluster numbers. Default: 10.
 
 `--mincoexpseqcutoff` specifies the minimal number of species with co-expressed genes that must be in the same sequence cluster (tree). Default: 3.
@@ -140,6 +142,8 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 
 `--muscle` specifies the MUSCLE path. This option can be used if MUSCLE is not in the PATH variable or if a specific version should be used. The default is 'muscle'.
 
+`occupancy` specifies the minimum column occupancy threshold for the multiple sequence alignment. Only alignment columns where at least the specified fraction of sequences contain a residue (i.e., are not gaps `-`) are retained for further analysis. The default value is 0.1.
+
 #### Tree construction
 `--treemethod` specifies the algorithm/tool used for construction of the phylogenetic trees once sequence clusters are identified. Currently, FastTree, RAxML, and IQ-TREE are the supported options. Default is FastTree.
 
@@ -149,7 +153,6 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 
 `--iqtree` specifies the full path to IQ-TREE. This option can be used if IQ-TREE is not in the PATH variable or if a specific version should be used. The default is 'iqtree'.
 
-`--cpur` specifies the number of cores that are used for the tree construction. Default is the value of `--cpub` or 4 if no other value is set.
 
 #### Batch uplaod to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268) [^1])
 If wanted, the trees can automatically be uploaded to iTOL. To use this option, you must have an active standard subscription. 
