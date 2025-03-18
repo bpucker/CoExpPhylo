@@ -83,15 +83,15 @@ Optional:
 ### Mandatory arguments
 `--config` specifies a config file that contains all the information about the input files. The columns in this file need to be comma-separated. Each row describes one data set. The columns are: ID, TPM file, CDS file, name of file with IDs of bait sequences, and optional PEP file.
 
-ID = This is usually the species name, but should not contain any spaces or other weired characters. Using a-Z and 0-9 is fine with underscores as space replacements. This ID is used as a prefix for all sequences of this species to avoid ambiguities when combining the sequences of different species in one file.
+ID = This is usually the species name, but should not contain any spaces or other special characters. Using a-Z and 0-9 is fine with underscores as space replacements. This ID is used as a prefix for all sequences of this species to avoid ambiguities when combining the sequences of different species in one file.
 
-TPM file = First column contains the gene IDs and the first row contains the sample names. All other fields in this table are gene expression values. The IDs in this file need to match the sequences in the CDS file and also the IDs given as baits.
+TPM file = First column contains the gene IDs and the first row contains the sample names. All other fields in this table are gene expression values. The IDs in this file need to match the IDs of sequences in the CDS file and also the IDs given as baits.
 
 CDS file = This is a multiple FASTA file with the coding sequences of this species. The sequence IDs need to match the TPM file and also the IDs specified as baits in the fourth input file type.
 
 Bait sequence ID file = This file contains the ID of genes that should be used as baits. For example, these could be known genes involved in the upstream part of a pathway if the objective is to discover genes further downstream in the pathway. One ID should be given per line.
 
-PEP file = This is a multiple FASTA file with the peptide sequences of this species. The sequence IDs need to match the TPM file and also the IDs specified as baits in the fourth input file type. The specification of a PEP file is optional, but speed up the analyses. Hence, the config file can also contain four columns.
+PEP file = This is a multiple FASTA file with the peptide sequences of this species. The sequence IDs need to match the TPM file and also the IDs specified as baits in the fourth input file type. The specification of a PEP file is optional, but speeds up the analyses. Hence, the config file can also contain four columns.
 
 
 `--out` specifies the output folder. All temporary file and the final output files will be placed in this folder. The folder will be created if it does not exist already.
@@ -100,11 +100,11 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 ### Optional arguments
 
 #### Annotation
-`--anno` specifies an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
+`--anno` specifies an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column. Columns are separated by TAB.
 
-`--araport` specifies the Araport11 peptide sequence file as reference for the analysis. This allows an effective annotation in the final steps.
+`--araport` specifies the Araport11 peptide sequence file as reference for the analysis. This allows an effective functional annotation in the final steps.
 
-`--seqs_cluster_anno` specifies the percentage of sequences per cluster that should be used for annotation. This allows an improvement in time.
+`--seqs_cluster_anno` specifies the percentage of sequences per cluster that should be analyzed for annotation. This allows a reduction of the run time.
 
 #### Per-species coexpression analysis
 `--r` specifies the minimal correlation coefficient for genes to be considered. The default value is 0.7.
