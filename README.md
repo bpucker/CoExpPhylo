@@ -39,7 +39,7 @@ Optional:
   DIAMOND
  ----
   --cpub               INT     Number of cores to use [4]
-  --batch              INT     Number of Blastp jobs to run in parallel [7]
+  --batch              INT     Number of BLASTp jobs to run in parallel [7]
   --scorecut           FLOAT   Minimal BLAST hit score cutoff [100.0]
   --simcut             FLOAT   Minimal BLAST hit similarity cutoff [80.0]
   --lencut             INT     Minimal BLAST hit length cutoff [100]
@@ -56,7 +56,7 @@ Optional:
  ----
   --alnmethod          STR     Alignment algorithm (mafft|muscle)[mafft] 
   --mafft              STR     Full path to MAFFT [mafft]
-  --muscle             STR     Full path to muscle [muscle]
+  --muscle             STR     Full path to MUSCLE [muscle]
   --occupancy          FLOAT   Minimal occupancy for a position during alignment to be kept [0.1]
 
  ----
