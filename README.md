@@ -1,10 +1,10 @@
 # CoExpPhylo
-Collection of scripts associated with an integrated co-expression and phylogenetic analysis approach. The script can continue based on exisiting files. 
+Collection of scripts associated with an integrated co-expression and phylogenetic analysis approach. If an analysis is interrupted, the script can continue based on exisiting files. 
 
 
 ## Combination of co-expression and orthology
 
-Based on defined genes in different species, this script searches for co-expressed genes in each species. The predefined genes of different species should be orthologs. To find out if the co-expressed genes are also orthologs, a phylogenetic tree is constructed. This allows to harness the available transcriptome data sets across species borders. If gene expression networks are conserved across species, the sequences identified through co-expression should cluster in phylogenetic trees that are constructed in the final step.
+Based on defined genes in different species (e.g. core of a biosynthesis pathway), this script searches for co-expressed genes in each species. The predefined genes of different species should be orthologs. To find out if the co-expressed genes are also orthologs, a phylogenetic tree is constructed. This allows to harness the available transcriptome data sets across species borders. If gene expression networks are conserved across species, the sequences identified through co-expression should cluster in phylogenetic trees that are constructed in the final step.
 
 **Please note that the script can continue based on exisiting files. If you want to start a new analysis, the output-folder should be empty or not exist yet.**
 
