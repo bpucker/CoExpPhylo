@@ -1,0 +1,24 @@
+name: env_CoExpPhylo
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - networkx
+  - plotly
+  - pandas
+  - csvkit
+  - hashlib
+  - parallel
+  - nohup
+  - perl
+  - perl-LWP-Protocol-https 
+  - perl-LWP-UserAgent-Determined
+  - perl-HTTP-Request-Common
+  - perl-Config-File-Simple
+  - perl-Data-Dumper
+  - pip:
+      - plotly
