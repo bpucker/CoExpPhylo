@@ -21,7 +21,7 @@ conda env create -f environment.yml
 conda activate env_CoExpPhylo
 ```
 
-### Additional Requirement for automatic upload to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268) [^1])
+### Additional Requirement for automatic upload to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268))
 If you want to use the upload to iTOL feature, download the `iTOL_uploader.pl` script from: https://itol.embl.de/help.cgi#batch
 
 Save it in your project directory and ensure it is executable:
@@ -176,7 +176,7 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 `--iqtree` specifies the full path to IQ-TREE. This option can be used if IQ-TREE is not in the `$PATH` variable or if a specific version should be used. The default is 'iqtree'.
 
 
-#### Batch uplaod to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268) [^1])
+#### Batch uplaod to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268))
 If wanted, the trees can automatically be uploaded to iTOL. To use this option, you must have an active standard subscription. 
 
 ##### Mandatory arguments
@@ -187,6 +187,7 @@ If wanted, the trees can automatically be uploaded to iTOL. To use this option, 
 
 
 ## Script for the annotation of sequence clusters
+The clusters can also be annotated via a seperate python script:
 
 ```
 Usage:
@@ -218,5 +219,4 @@ Optional:
 
 This repository.
 
-
-[^1] Ivica Letunic, Peer Bork, Interactive Tree of Life (iTOL) v6: recent updates to the phylogenetic tree display and annotation tool, Nucleic Acids Research, Volume 52, Issue W1, 5 July 2024, Pages W78–W82, https://doi.org/10.1093/nar/gkae268
+Ivica Letunic, Peer Bork, Interactive Tree of Life (iTOL) v6: recent updates to the phylogenetic tree display and annotation tool, Nucleic Acids Research, Volume 52, Issue W1, 5 July 2024, Pages W78–W82, https://doi.org/10.1093/nar/gkae268
