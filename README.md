@@ -109,13 +109,13 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 #### Per-species coexpression analysis
 `--r` specifies the minimal correlation coefficient for genes to be considered. The default value is 0.7.
 
-`--p` specifies the maximal p-value in the correlation calculation for genes to be considered. The default value is 0.05.
+`--p` specifies the maximal adjusted p-value in the correlation calculation for genes to be considered. The default value is 0.05.
 
 `--numcut` specifies the maximal number of genes to consider in the co-expression analysis. Only these top sequences are analyzed in the next steps. The default value is 100. An increase of this number will substantially increase the run time.
 
-`--min_exp_cutoff` specifies the minimal combined expression of a any given gene to be considered in the co-expression analysis. Default: 30.
+`--min_exp_cutoff` specifies the minimal combined expression of a any given gene to be considered in the co-expression analysis. The default value is 30.
 
-`--mindetect` specifies the minimal number of baits that any given gene needs to be co-expressed with. Depending on the number of baits, this value can be increased. A higher value will generally boost the specificity at the cost of sensitivity. The strictes possible option is setting this number to the number of baits. Default: 1.
+`--mindetect` specifies the minimal number of baits that any given gene needs to be co-expressed with. Depending on the number of baits, this value can be increased. A higher value will generally boost the specificity at the cost of sensitivity. The strictes possible option is setting this number to the number of baits. The default value is 1.
 
 #### DIAMOND
 `--cpub` specifies the number of cores for DIAMOND blastp and other operations. The default value is 4.
@@ -131,7 +131,7 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 `--evalue` specifies the maximal e-value of a DIAMOND blast hit to be considered. The default value is 10<sup>-5</sup>.
 
 #### Clustering
-`--minseqcutoff` specifies the minimal number of sequences that must belong to a cluster to trigger the construction of a phylogenetic tree. Extremely small clusters are masked to avoids inflation of cluster numbers. Default: 10.
+`--minseqcutoff` specifies the minimal number of sequences that must belong to a cluster to trigger the construction of a phylogenetic tree. Extremely small clusters are masked to avoid inflation of cluster numbers. Default: 10.
 
 `--mincoexpseqcutoff` specifies the minimal number of species with co-expressed genes that must be in the same sequence cluster (tree). Default: 3.
 
@@ -155,7 +155,7 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 
 
 #### Batch uplaod to iTOL ([Letunic and Bork (2024)](https://doi.org/10.1093/nar/gkae268) [^1])
-If wanted, the trees can automatically be uploaded to iTOL. To use this option, you must have an active standard subscription. 
+If desired, the trees can automatically be uploaded to iTOL. To use this option, you must have an active standard subscription. 
 
 ##### Mandatory arguments
 `--API` specifies the API key.
