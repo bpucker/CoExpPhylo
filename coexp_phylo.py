@@ -1461,7 +1461,7 @@ elif '--mode' in sys.argv and '--aln_file' in sys.argv:
 	aln_trimming( sys.argv, __usage__ )
 elif '--mode' in sys.argv and '--exp' in sys.argv:
 	coexp_helper( sys.argv, __usage__ )
-elif '--version' in sys.argv:
+elif '--version' in sys.argv or '-v' in sys.argv:
 	sys.exit( __version__ )
 else:
 	sys.exit( __usage__ )
