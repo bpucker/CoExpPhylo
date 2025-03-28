@@ -4,7 +4,7 @@
 ### some functions taken from MYB_annotator.py and KIPEs ###
 ### some code blocks were generated using GPT 3.5 and GPT 4o ###
 
-__version__ = "v1.29"
+__version__ = "v1.30"
 
 __usage__ = """
 				python3 coexp_phylo.py
@@ -16,7 +16,7 @@ __usage__ = """
 				ANNOTATION
 				----
 				--anno <ANNOTATION_FILE>
-				--araport <ARAPORT_PEP_FILE>
+				--reference <REFERENCE_PEP_FILE>
 				--seqs_cluster_anno <PERCENTAGE_OF_SEQUENCES_PER_CLUSTER_USED_FOR_ANNOTATION>[50.0]
 
 				----
@@ -133,7 +133,7 @@ def calculate_md5sum( file ):
 	except FileNotFoundError:
 		return str( file + "File not found" )
 
-def generate_docu_file( tmp_folder, docu_file, config_file, rcutoff, pvaluecutoff, scorecut, simcut, lencut, evalue, mindetection, minseqcutoff, mincoexpseqcutoff, min_exp_cutoff, alnmethod, treemethod, anno_file, araport_seq_file, muscle, mafft, raxml, iqtree, fasttree, seqs_cluster_anno, clean, api, proj_name, perl_path ):
+def generate_docu_file( tmp_folder, docu_file, config_file, rcutoff, pvaluecutoff, scorecut, simcut, lencut, evalue, mindetection, minseqcutoff, mincoexpseqcutoff, min_exp_cutoff, alnmethod, treemethod, anno_file, ref_seq_file, muscle, mafft, raxml, iqtree, fasttree, seqs_cluster_anno, clean, api, proj_name, perl_path ):
 	
 	# --- Upload test tree to iTOL --- #
 	if api != '':
@@ -175,7 +175,7 @@ def generate_docu_file( tmp_folder, docu_file, config_file, rcutoff, pvaluecutof
 		f.write( str ( 'alignment method = ' + alnmethod + '\n' ) )
 		f.write( str ( 'tree method = ' + treemethod + '\n' ) )
 		f.write( str ( 'anno = ' + anno_file + '\n' ) )
-		f.write( str ( 'araport file = ' + araport_seq_file + '\n' ) )
+		f.write( str ( 'reference peptide file = ' + ref_seq_file + '\n' ) )
 		f.write( str ( 'seqs per cluster used for anno [%] = ' + str( seqs_cluster_anno ) + '\n' ) )
 		if api != '':
 			f.write( str ( 'API key for iTOL = ' + api + '\n' ) )
@@ -763,7 +763,7 @@ def sort_groups( group ):
 		return float('inf')
 	return -(coexp_count / at_count)		# negative because of descanding sorting
 
-def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, cpub, batch, perc_cluster_anno, clean ):
+def get_groups( annotation_file, ref_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, cpub, batch, perc_cluster_anno, clean ):
 	"""! @brief identify groups in huge cluster """
 
 	# --- identify groups --- #
@@ -781,12 +781,12 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 	sys.stdout.flush()
 	
 	# --- prepare database for annotation --- #
-	if len( araport_seq_file ) > 0:
+	if len( ref_seq_file ) > 0:
 		tmp_blast_folder = tmp_folder + "anno_blast/"
 		if not os.path.exists( tmp_blast_folder ):
 			os.makedirs( tmp_blast_folder )
 		blast_db = tmp_blast_folder + "blastdb"
-		p = subprocess.Popen( args= "diamond makedb --in " + araport_seq_file + " -d " + blast_db, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL )
+		p = subprocess.Popen( args= "diamond makedb --in " + ref_seq_file + " -d " + blast_db, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL )
 		p.communicate()
 	
 		# --- write sequences into output files --- #
@@ -807,7 +807,7 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 					counter += 1
 					final_cluster.append( fg )
 					group_sequence_file = aln_folder + str( counter ).zfill( 4 ) + ".pep.fasta"	#save all sequenes of a group in a FASTA file
-					if len( araport_seq_file ) > 0:
+					if len( ref_seq_file ) > 0:
 						group_anno_file = tmp_blast_folder + str( counter ).zfill( 4 ) + "_anno.pep.fasta"
 					seq_collection_anno = []
 					for gene in fg:
@@ -819,7 +819,7 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 						
 						with open( group_sequence_file, "a" ) as out:
 							out.write( current_seq )
-						if len( araport_seq_file ) > 0:
+						if len( ref_seq_file ) > 0:
 							seq_collection_anno.append( current_seq )
 					
 					if len( seq_collection_anno ) > 20:
@@ -832,7 +832,7 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 						seq_nums[ counter ] = len( seq_collection_anno )
 						final_seqs = seq_collection_anno		#to avoid that less than 10 seqs are annotated
 					
-					if len( araport_seq_file ) > 0:
+					if len( ref_seq_file ) > 0:
 						with open( group_anno_file, 'w') as out:
 							for seq in final_seqs:
 								out.write( seq )
@@ -841,7 +841,7 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 							current_anno_command = "diamond blastp -q " + group_anno_file + " -d " + blast_db + " -o " + blast_result_file + " --threads " + str( cpub ) + "\n"
 							anno_command_out.write( current_anno_command )
 
-		if len( araport_seq_file ) > 0:
+		if len( ref_seq_file ) > 0:
 			with open( anno_blast_cmd_file, "a" ) as anno_command_out:
 				anno_command_out.write( "EOF" )
 			os.chmod( anno_blast_cmd_file, 0o755 )
@@ -852,7 +852,7 @@ def get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_t
 		counter = 0
 		for fg in final_cluster:  # return best annotation
 			counter += 1
-			if len( araport_seq_file ) > 0: 
+			if len( ref_seq_file ) > 0: 
 				group_sequence_file = aln_folder + str( counter ).zfill( 4 ) + ".pep.fasta"
 				blast_result_file = tmp_blast_folder + group_sequence_file.split('/')[-1] + "_blast_results.txt"
 				seq_num = seq_nums[ counter ]
@@ -1123,10 +1123,10 @@ def main( arguments ):
 	else:
 		treemethod = "fasttree"
 	
-	if '--araport' in arguments:
-		araport_seq_file = arguments[ arguments.index('--araport')+1 ]
+	if '--reference' in arguments:
+		ref_seq_file = arguments[ arguments.index('--reference')+1 ]
 	else:
-		araport_seq_file = ""
+		ref_seq_file = ""
 
 	if '--seqs_cluster_anno' in arguments:
 		seqs_cluster_anno = int( arguments[ arguments.index('--seqs_cluster_anno')+1 ] )
@@ -1195,7 +1195,7 @@ def main( arguments ):
 	sys.stdout.write( str( datetime.datetime.now() ) + " - preparing documentation file ... \n" )
 	sys.stdout.flush()
 	docu_file = output_folder + datetime.date.today().strftime('%Y%m%d') + '_docu.txt'
-	generate_docu_file ( tmp_folder, docu_file, config_file, rcutoff, pvaluecutoff, scorecut, simcut, lencut, evalue, mindetection, minseqcutoff, mincoexpseqcutoff, min_exp_cutoff, alnmethod, treemethod, anno_file, araport_seq_file, muscle, mafft, raxml, iqtree, fasttree, seqs_cluster_anno, clean, api, proj_name, perl_path )
+	generate_docu_file ( tmp_folder, docu_file, config_file, rcutoff, pvaluecutoff, scorecut, simcut, lencut, evalue, mindetection, minseqcutoff, mincoexpseqcutoff, min_exp_cutoff, alnmethod, treemethod, anno_file, ref_seq_file, muscle, mafft, raxml, iqtree, fasttree, seqs_cluster_anno, clean, api, proj_name, perl_path )
 	sys.stdout.write( str( datetime.datetime.now() ) + " ... documentation file completed: " + docu_file + "\n" )
 	sys.stdout.write( str( datetime.datetime.now() ) + " loading data ... \n" )
 	sys.stdout.flush()
@@ -1411,7 +1411,7 @@ def main( arguments ):
 	annotation_file = output_folder + "functional_annotation_of_clusters.txt"
 	sys.stdout.write( str( datetime.datetime.now() ) + " - constructing sequence clusters...\n" )
 	sys.stdout.flush()
-	get_groups( annotation_file, araport_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, cpub, batch, seqs_cluster_anno, clean )
+	get_groups( annotation_file, ref_seq_file, blast_results, anno_mapping_table, huge_pep_collection, aln_folder, mincoexpseqcutoff, minseqcutoff, tmp_folder, cpub, batch, seqs_cluster_anno, clean )
 	sys.stdout.write( str( datetime.datetime.now() ) + " ... sequence clustering completed.\n" )
 	sys.stdout.flush()
 		
