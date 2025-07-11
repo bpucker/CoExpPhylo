@@ -213,12 +213,28 @@ Optional:
 
 `--anno` specifies the annotation file. This file contains a tab-delimited table with the reference sequence ID in the first column and the annotation in the following column(s). All following columns will be merged with a ";" as separator.
 
+## Computational requirements
+
+The pipeline performs several computationally intensive steps, including a coexpression analysis, all-vs-all sequence comparisons, and multiple sequence alignments.
+
+Concise requirements depend on the selected tools (e.g., MAFFT vs. MUSCLE), the number of input species, and size and complexity of the input datasets. Below, we provide an overview of the hardware used and corresponding runtimes for different datasets:
+
+|Data|CPU cores|RAM|Runtime (default parameters)|
+---
+|Example dataset (small test case)|28|256 GB|tba|
+|Dataset as described in publication|28|256 GB|~5 hours|
+
+These examples were run on a high-performance computing cluster. For smaller datasets or fewer species, lower resources (e.g., 16-32 GB RAM and 8-16 cores) may suffice, though runtimes will increase accordingly.
 
 ## License
+
+GNU GENERAL PUBLIC LICENSE, Version 3
 
 ## References
 
 This repository.
 
+Grünig, N. & Pucker, B. (2025). CoExpPhylo – A Novel Pipeline for Biosynthesis Gene Discovery. bioRxiv;
+doi: 10.1101/2025.04.03.647051.
 
 Ivica Letunic, Peer Bork, Interactive Tree of Life (iTOL) v6: recent updates to the phylogenetic tree display and annotation tool, Nucleic Acids Research, Volume 52, Issue W1, 5 July 2024, Pages W78–W82, https://doi.org/10.1093/nar/gkae268
