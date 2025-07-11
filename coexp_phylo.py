@@ -859,6 +859,7 @@ def get_groups( annotation_file, ref_seq_file, blast_results, anno_mapping_table
 				group_annotation, score = annotate_group( blast_result_file, anno_mapping_table, seq_num )
 			else:
 				group_annotation = "n/a"
+				score = 0
 			anno_out.write( str( counter ).zfill( 4 ) + "\t" + str( len( fg ) ) + "\t" + str( round( score, 2 ) )+ "\t" + group_annotation + "\n" )
 
 def interpolate_color( x ):
