@@ -220,7 +220,7 @@ The pipeline performs several computationally intensive steps, including a coexp
 Concise requirements depend on the selected tools (e.g., MAFFT vs. MUSCLE), the number of input species, and size and complexity of the input datasets. Below, we provide an overview of the hardware used and corresponding runtimes for different datasets:
 
 |Data|CPU cores|RAM|Runtime (default parameters)|
----
+|---|---:|---:|---|
 |Example dataset (small test case)|28|256 GB|tba|
 |Dataset as described in publication|28|256 GB|~5 hours|
 
