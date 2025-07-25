@@ -221,7 +221,7 @@ Concise requirements depend on the selected tools (e.g., MAFFT vs. MUSCLE), the 
 
 |Data|CPU cores|RAM|Runtime (default parameters)|
 |---|---:|---:|---|
-|Example dataset (small test case)|28|256 GB|tba|
+|Example dataset (small test case)|28|256 GB|~1 minute|
 |Dataset as described in publication|28|256 GB|~5 hours|
 
 These examples were run on a high-performance computing cluster. For smaller datasets or fewer species, lower resources (e.g., 16-32 GB RAM and 8-16 cores) may suffice, though runtimes will increase accordingly.
