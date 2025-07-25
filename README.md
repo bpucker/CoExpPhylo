@@ -124,7 +124,7 @@ PEP file = This is a multiple FASTA file with the peptide sequences of this spec
 ### Optional arguments
 
 #### Annotation
-`--anno` specifies an annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
+`--anno` specifies an tab-separated annotation file. IDs need to be located in the first column and the annotation text need to be located in the second column.
 
 `--reference` specifies the peptide sequence file as reference for the analysis. This allows an effective annotation in the final steps.
 
