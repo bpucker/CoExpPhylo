@@ -217,7 +217,7 @@ Optional:
 
 The pipeline performs several computationally intensive steps, including a coexpression analysis, all-vs-all sequence comparisons, and multiple sequence alignments.
 
-Concise requirements depend on the selected tools (e.g., MAFFT vs. MUSCLE), the number of input species, and size and complexity of the input datasets. Below, we provide an overview of the hardware used and corresponding runtimes for different datasets:
+Specific requirements depend on the selected tools (e.g., MAFFT vs. MUSCLE), the number of input species, and size and complexity of the input datasets. Below, we provide an overview of the hardware used and corresponding runtimes for different datasets:
 
 |Data|CPU cores|RAM|Runtime (default parameters)|
 |---|---:|---:|---|
