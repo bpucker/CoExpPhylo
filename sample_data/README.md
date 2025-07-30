@@ -41,9 +41,9 @@ Contains one subfolder for each species (`Species_A` to `Sepcies_L`), with the f
 
 #### `reference/`
 Contains synthetic reference data to annotate output data:
-- `reference.fasta`- Reference trasncript sequences.
+- `reference.fasta`- Reference transcript sequences.
 - `reference.pep` - Reference protein sequences (translated `reference.fasta`).
-- `reference_annotation.tsv`- Tab-separated annotation table mapping reference geens to synthetic functional descriptions.
+- `reference_annotation.tsv`- Tab-separated annotation table mapping reference genes to synthetic functional descriptions.
 
 
 ## Usage with CoExpPhylo
@@ -58,5 +58,12 @@ python3 /path/to/coexp_phylo.py \
 --anno /path/to/sample_data/data/reference/reference_annotation.tsv
 ```
 
+## Output Files
+This folder contains a collection of output files that would be generated using this dataset and CoExpPhylo with default parameters:
+- `functional_annotation_of_clusters.txt` - Overview about the generated OCGs and their number of sequences as well as the annotation.
+- `aln` - Folder containg all seqeunces belonging to the individual OCGs.
+- `trees` - Folder containing all `.tree` files in Newick format. These files could be uploaded to iTOL.
+
+
 ## Data Origin
-All fiels were synthetically generated and do not represent real organisms or biological measurements. They are meant solely for demonstartion purposes and are free to use for testing purposes.
+All files were synthetically generated and do not represent real organisms or biological measurements. They are meant solely for demonstration purposes and are free to use for testing.
