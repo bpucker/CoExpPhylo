@@ -234,6 +234,6 @@ GNU GENERAL PUBLIC LICENSE, Version 3
 
 This repository.
 
-Grünig, N. & Pucker, B. (2025). CoExpPhylo – A Novel Pipeline for Biosynthesis Gene Discovery. bioRxiv; doi: [10.1101/2025.04.03.647051](https://doi.org/10.1101/2025.04.03.647051).
+Grünig, N., Pucker, B. CoExpPhylo – a novel pipeline for biosynthesis gene discovery. BMC Genomics 26, 807 (2025). doi: [10.1186/s12864-025-12061-3](https://doi.org/10.1186/s12864-025-12061-3).
 
 Ivica Letunic, Peer Bork, Interactive Tree of Life (iTOL) v6: recent updates to the phylogenetic tree display and annotation tool, Nucleic Acids Research, Volume 52, Issue W1, 5 July 2024, Pages W78–W82, https://doi.org/10.1093/nar/gkae268
